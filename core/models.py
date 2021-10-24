@@ -12,6 +12,10 @@ class Person(models.Model):
     def __str__(self):
         return f'{self.name} (birthday={self.birthday})'
 
+    class Meta:
+        # Use this class as common information of subclasses
+        abstract = True
+
 
 class Teacher(Person):
     at_work = models.BooleanField(_('at work'), default=True)

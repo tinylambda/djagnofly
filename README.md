@@ -4,71 +4,62 @@ Some django exmaples branch by branch
 every branch is independent
 
 ```shell
-(venv) ➜  djangofly git:(django-model-inheritance) ✗ python manage.py dbshell
-SQLite version 3.32.3 2020-06-18 14:16:19
-Enter ".help" for usage hints.
-sqlite> .schema core_person
-CREATE TABLE IF NOT EXISTS "core_person" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(128) NOT NULL, "birthday" date NOT NULL, "updated_at" datetime NOT NULL);
-sqlite> .schema core_student
-CREATE TABLE IF NOT EXISTS "core_student" ("person_ptr_id" bigint NOT NULL PRIMARY KEY REFERENCES "core_person" ("id") DEFERRABLE INITIALLY DEFERRED, "graduated" bool NOT NULL);
-sqlite> .schema core_teacher
-CREATE TABLE IF NOT EXISTS "core_teacher" ("person_ptr_id" bigint NOT NULL PRIMARY KEY REFERENCES "core_person" ("id") DEFERRABLE INITIALLY DEFERRED, "at_work" bool NOT NULL);
-sqlite> 
-```
-
-```shell
+(venv) ➜  djangofly git:(django-model-inheritance-abstract) ✗ python manage.py shell
 Python 3.9.4 (default, Apr 26 2021, 10:27:43) 
 Type 'copyright', 'credits' or 'license' for more information
 IPython 7.28.0 -- An enhanced Interactive Python. Type '?' for help.
 
-In [1]: from core.models import Student, Teacher, Person
+In [1]: from core.models import Teacher, Student, Person
 
-In [2]: p1 = Person.objects.get(id=1)
+In [2]: import datetime
 
-In [3]: p2 = Person.objects.get(id=2)
+In [3]: Teacher.objects.create(name='Felix', birthday=datetime.date.today(), at_work=True)
+Out[3]: <Teacher: Felix (birthday=2021-10-24)>
 
-In [4]: p1
-Out[4]: <Person: ChengCheng (birthday=2016-12-07)>
+In [4]: Student.objects.create(name='Max', birthday=datetime.date.today(), graduated=False)
+Out[4]: <Student: Max (birthday=2021-10-24)>
 
-In [5]: p2
-Out[5]: <Person: Gao (birthday=1987-10-22)>
+In [5]: [t.id for t in Teacher.objects.all()]
+Out[5]: [1]
 
-In [6]: p1.teacher
+In [6]: [s.id for s in Student.objects.all()]
+Out[6]: [1]
+
+In [7]: [p.id for p in Person.objects.all()]
 ---------------------------------------------------------------------------
-RelatedObjectDoesNotExist                 Traceback (most recent call last)
-<ipython-input-6-14cfa89edab1> in <module>
-----> 1 p1.teacher
+AttributeError                            Traceback (most recent call last)
+<ipython-input-7-a145e97939f1> in <module>
+----> 1 [p.id for p in Person.objects.all()]
 
-~/PycharmProjects/djangofly/venv/lib/python3.9/site-packages/django/db/models/fields/related_descriptors.py in __get__(self, instance, cls)
-    419 
-    420         if rel_obj is None:
---> 421             raise self.RelatedObjectDoesNotExist(
-    422                 "%s has no %s." % (
-    423                     instance.__class__.__name__,
+AttributeError: type object 'Person' has no attribute 'objects'
 
-RelatedObjectDoesNotExist: Person has no teacher.
+In [8]: type(Person)
+Out[8]: django.db.models.base.ModelBase
 
-In [7]: p1.student
-Out[7]: <Student: ChengCheng (birthday=2016-12-07)>
-
-In [8]: p2.teacher
-Out[8]: <Teacher: Gao (birthday=1987-10-22)>
-
-In [9]: p2.student
----------------------------------------------------------------------------
-RelatedObjectDoesNotExist                 Traceback (most recent call last)
-<ipython-input-9-bdb5b9203d0c> in <module>
-----> 1 p2.student
-
-~/PycharmProjects/djangofly/venv/lib/python3.9/site-packages/django/db/models/fields/related_descriptors.py in __get__(self, instance, cls)
-    419 
-    420         if rel_obj is None:
---> 421             raise self.RelatedObjectDoesNotExist(
-    422                 "%s has no %s." % (
-    423                     instance.__class__.__name__,
-
-RelatedObjectDoesNotExist: Person has no student.
+In [9]: type(Teacher)
+Out[9]: django.db.models.base.ModelBase
 
 In [10]: 
+```
 
+```shell
+(venv) ➜  djangofly git:(django-model-inheritance-abstract) ✗ python manage.py dbshell
+SQLite version 3.32.3 2020-06-18 14:16:19
+Enter ".help" for usage hints.
+sqlite> .tables
+account_user                   core_student                 
+account_user_groups            core_teacher                 
+account_user_user_permissions  django_admin_log             
+auth_group                     django_content_type          
+auth_group_permissions         django_migrations            
+auth_permission                django_session               
+sqlite> .schema core_student
+CREATE TABLE IF NOT EXISTS "core_student" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(128) NOT NULL, "birthday" date NOT NULL, "updated_at" datetime NOT NULL, "graduated" bool NOT NULL);
+sqlite> .schema core_teacher
+CREATE TABLE IF NOT EXISTS "core_teacher" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(128) NOT NULL, "birthday" date NOT NULL, "updated_at" datetime NOT NULL, "at_work" bool NOT NULL);
+sqlite> select * from core_student;
+1|Max|2021-10-24|2021-10-24 13:34:37.755721|0
+sqlite> select * from core_teacher;
+1|Felix|2021-10-24|2021-10-24 13:34:32.343277|1
+sqlite> 
 ```
