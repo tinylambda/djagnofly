@@ -15,11 +15,23 @@ class Person(models.Model):
     class Meta:
         # Use this class as common information of subclasses
         abstract = True
+        ordering = ['name']
+
+# Django does make one adjustment to the Meta class of an abstract base class: before installing the Meta attribute,
+# it sets abstract=False. This means that children of abstract base classes don’t automatically become abstract classes
+# themselves. To make an abstract base class that inherits from another abstract base class,
+# you need to explicitly set abstract=True on the child.
 
 
 class Teacher(Person):
     at_work = models.BooleanField(_('at work'), default=True)
 
+    class Meta(Person.Meta):
+        db_table = 'teachers'
+
 
 class Student(Person):
     graduated = models.BooleanField(_('graduated'), default=False)
+
+    class Meta(Person.Meta):
+        db_table = 'students'

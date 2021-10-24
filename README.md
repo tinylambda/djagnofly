@@ -63,3 +63,18 @@ sqlite> select * from core_teacher;
 1|Felix|2021-10-24|2021-10-24 13:34:32.343277|1
 sqlite> 
 ```
+
+--- inherit Meta
+```shell
+(venv) ➜  djangofly git:(django-model-inheritance-abstract) ✗ python manage.py dbshell
+SQLite version 3.32.3 2020-06-18 14:16:19
+Enter ".help" for usage hints.
+sqlite> .tables
+account_user                   django_admin_log             
+account_user_groups            django_content_type          
+account_user_user_permissions  django_migrations            
+auth_group                     django_session               
+auth_group_permissions         students                     
+auth_permission                teachers                     
+sqlite> 
+```
